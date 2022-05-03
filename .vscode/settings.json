@@ -1,0 +1,8 @@
+{
+    "java.dependency.packagePresentation": "hierarchical",
+    "java.project.sourcePaths": [
+        "app\\src\\main\\java",
+        "app\\src\\test\\java"
+    ],
+    "java.configuration.updateBuildConfiguration": "automatic"
+}
