@@ -233,7 +233,7 @@ public class UI extends Application {
         Scene scene = new Scene(vBox);
 
         primaryStage.setScene(scene);
-        primaryStage.setTitle("Libary System");
+        primaryStage.setTitle("Library System");
 
         primaryStage.show();
     }
