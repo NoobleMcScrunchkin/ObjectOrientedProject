@@ -3,6 +3,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Launch MainUI",
+            "request": "launch",
+            "mainClass": "com.aslett.library.MainUI",
+            "projectName": "app"
+        },
+        {
+            "type": "java",
             "name": "Launch Main",
             "request": "launch",
             "mainClass": "com.aslett.library.Main",
@@ -13,6 +20,6 @@
             "name": "Launch Current File",
             "request": "launch",
             "mainClass": "${file}"
-        },
+        }
     ]
 }
