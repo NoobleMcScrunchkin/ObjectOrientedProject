@@ -156,6 +156,7 @@ public abstract class Model implements Cloneable {
                                     }
                                 }
                             }
+
                             if (f != null) {
                                 try {
                                     f.setAccessible(true);
@@ -228,6 +229,8 @@ public abstract class Model implements Cloneable {
 
         query += ") VALUES (";
 
+        Class<?> c = null;
+
         for (int i = 0; i < fields.size(); i++) {
             DBField field = fields.get(i);
 
@@ -236,12 +239,15 @@ public abstract class Model implements Cloneable {
             } else {
                 Field f = null;
 
-                try {
-                    f = this.getClass().getDeclaredField(field.field);
-                } catch (Exception e) {
+                c = this.getClass();
+                while (f == null) {
                     try {
-                        f = Model.class.getDeclaredField(field.field);
-                    } catch (Exception ex) {
+                        f = c.getDeclaredField(field.field);
+                    } catch (Exception e) {
+                        c = c.getSuperclass();
+                        if (c.getSimpleName().equals("Object")) {
+                            break;
+                        }
                     }
                 }
 
@@ -266,6 +272,8 @@ public abstract class Model implements Cloneable {
     public void save() {
         String query = String.format("UPDATE %s SET ", this.table);
 
+        Class<?> c = null;
+
         for (int i = 0; i < fields.size(); i++) {
             DBField field = fields.get(i);
 
@@ -274,12 +282,15 @@ public abstract class Model implements Cloneable {
             } else {
                 Field f = null;
 
-                try {
-                    f = this.getClass().getDeclaredField(field.field);
-                } catch (Exception e) {
+                c = this.getClass();
+                while (f == null) {
                     try {
-                        f = Model.class.getDeclaredField(field.field);
-                    } catch (Exception ex) {
+                        f = c.getDeclaredField(field.field);
+                    } catch (Exception e) {
+                        c = c.getSuperclass();
+                        if (c.getSimpleName().equals("Object")) {
+                            break;
+                        }
                     }
                 }
 
