@@ -30,54 +30,39 @@ public abstract class Model implements Cloneable {
                     DBField field = product.fields.get(i);
                     String type = field.type;
                     Field f = null;
+                    Object value = null;
+
                     switch (type) {
                         case "int":
-                            c = instance.getClass();
-                            while (f == null) {
-                                try {
-                                    f = c.getDeclaredField(field.field);
-                                } catch (Exception e) {
-                                    c = c.getSuperclass();
-                                    if (c.getSimpleName().equals("Object")) {
-                                        break;
-                                    }
-                                }
-                            }
-
-                            if (f != null) {
-                                try {
-                                    f.setAccessible(true);
-                                    f.set(product, rs.getInt(field.field));
-                                } catch (Exception e) {
-                                }
-                            }
+                            value = rs.getInt(field.field);
                             break;
-
                         case "text":
                         case "longtext":
-                            c = instance.getClass();
-                            while (f == null) {
-                                try {
-                                    f = c.getDeclaredField(field.field);
-                                } catch (Exception e) {
-                                    c = c.getSuperclass();
-                                    if (c.getSimpleName().equals("Object")) {
-                                        break;
-                                    }
-                                }
-                            }
-
-                            if (f != null) {
-                                try {
-                                    f.setAccessible(true);
-                                    f.set(product, rs.getString(field.field));
-                                } catch (Exception e) {
-                                }
-                            }
+                            value = rs.getString(field.field);
                             break;
-
                         default:
                             break;
+                    }
+
+                    c = instance.getClass();
+                    while (f == null) {
+                        try {
+                            f = c.getDeclaredField(field.field);
+                        } catch (Exception e) {
+                            c = c.getSuperclass();
+                            if (c.getSimpleName().equals("Object")) {
+                                break;
+                            }
+                        }
+                    }
+
+                    if (f != null) {
+                        try {
+                            f.setAccessible(true);
+                            f.set(product, value);
+                        } catch (Exception e) {
+                            System.out.println("Failed to set field " + field.field);
+                        }
                     }
                 }
             }
@@ -118,57 +103,39 @@ public abstract class Model implements Cloneable {
                     DBField field = b.fields.get(i);
                     String type = field.type;
                     Field f = null;
+                    Object value = null;
 
                     switch (type) {
                         case "int":
-                            c = instance.getClass();
-                            while (f == null) {
-                                try {
-                                    f = c.getDeclaredField(field.field);
-                                } catch (Exception e) {
-                                    c = c.getSuperclass();
-                                    if (c.getSimpleName().equals("Object")) {
-                                        break;
-                                    }
-                                }
-                            }
-
-                            if (f != null) {
-                                try {
-                                    f.setAccessible(true);
-                                    f.set(b, rs.getInt(field.field));
-                                } catch (Exception e) {
-                                }
-                            }
-
+                            value = rs.getInt(field.field);
                             break;
-
                         case "text":
                         case "longtext":
-                            c = instance.getClass();
-                            while (f == null) {
-                                try {
-                                    f = c.getDeclaredField(field.field);
-                                } catch (Exception e) {
-                                    c = c.getSuperclass();
-                                    if (c.getSimpleName().equals("Object")) {
-                                        break;
-                                    }
-                                }
-                            }
-
-                            if (f != null) {
-                                try {
-                                    f.setAccessible(true);
-                                    f.set(b, rs.getString(field.field));
-                                } catch (Exception e) {
-                                }
-                            }
-
+                            value = rs.getString(field.field);
                             break;
-
                         default:
                             break;
+                    }
+
+                    c = instance.getClass();
+                    while (f == null) {
+                        try {
+                            f = c.getDeclaredField(field.field);
+                        } catch (Exception e) {
+                            c = c.getSuperclass();
+                            if (c.getSimpleName().equals("Object")) {
+                                break;
+                            }
+                        }
+                    }
+
+                    if (f != null) {
+                        try {
+                            f.setAccessible(true);
+                            f.set(b, value);
+                        } catch (Exception e) {
+                            System.out.println("Failed to set field " + field.field);
+                        }
                     }
                 }
 
@@ -319,15 +286,21 @@ public abstract class Model implements Cloneable {
     public String[] allProperties() {
         String[] properties = new String[fields.size()];
 
+        Class<?> c = null;
+
         for (int i = 0; i < fields.size(); i++) {
             DBField field = fields.get(i);
             Field f = null;
-            try {
-                f = this.getClass().getDeclaredField(field.field);
-            } catch (Exception e) {
+            
+            c = this.getClass();
+            while (f == null) {
                 try {
-                    f = Model.class.getDeclaredField(field.field);
-                } catch (Exception ex) {
+                    f = c.getDeclaredField(field.field);
+                } catch (Exception e) {
+                    c = c.getSuperclass();
+                    if (c.getSimpleName().equals("Object")) {
+                        break;
+                    }
                 }
             }
 

@@ -15,7 +15,7 @@ public class DVD extends Product {
     public DVD(String name, String description, String image, String director, String genre, int year,
             String certificate, String company, int runtime, int quantity) {
         super(name, description, image, quantity);
-        addFields();
+        this.addFields();
 
         this.director = director;
         this.genre = genre;
@@ -24,7 +24,7 @@ public class DVD extends Product {
         this.company = company;
         this.runtime = runtime;
 
-        super.dbInsert();
+        this.dbInsert();
     }
 
     public DVD() {

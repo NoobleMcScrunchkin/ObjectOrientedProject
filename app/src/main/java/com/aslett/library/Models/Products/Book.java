@@ -15,7 +15,7 @@ public class Book extends Product {
     public Book(String name, String description, String image, String author, String publisher, String isbn,
             String genre, String language, Integer year, Integer quantity) {
         super(name, description, image, quantity);
-        addFields();
+        this.addFields();
 
         this.author = author;
         this.publisher = publisher;
@@ -24,7 +24,7 @@ public class Book extends Product {
         this.language = language;
         this.year = year;
 
-        super.dbInsert();
+        this.dbInsert();
     }
 
     public Book() {
