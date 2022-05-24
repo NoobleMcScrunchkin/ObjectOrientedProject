@@ -2,6 +2,7 @@ package com.aslett.library.Utils;
 
 import java.sql.*;
 
+import com.aslett.library.Models.Loan;
 import com.aslett.library.Models.Products.*;
 
 import io.github.cdimascio.dotenv.*;
@@ -30,6 +31,8 @@ public class DB {
         book.createTable();
         DVD dvd = new DVD();
         dvd.createTable();
+        Loan loan = new Loan();
+        loan.createTable();
     }
 
     public ResultSet query(String query) {

@@ -2,9 +2,8 @@ package com.aslett.library;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-
+import com.aslett.library.Models.Loan;
 import com.aslett.library.Models.Products.*;
-
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
@@ -84,6 +83,8 @@ public class UI extends Application {
         GridPane.setConstraints(tableView, 0, 1);
         GridPane.setColumnSpan(tableView, 2);
 
+        tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
         grid.getChildren().addAll(searchLabel, searchField, tableView);
         booksTab.getChildren().add(grid);
         return booksTab;
@@ -146,9 +147,72 @@ public class UI extends Application {
         GridPane.setConstraints(tableView, 0, 1);
         GridPane.setColumnSpan(tableView, 2);
 
+        tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
         grid.getChildren().addAll(searchLabel, searchField, tableView);
         dvdsTab.getChildren().add(grid);
         return dvdsTab;
+    }
+
+    public Group createLoansTab() {
+        Group loansTab = new Group();
+        TableView<Loan> tableView = new TableView<>();
+
+        TableColumn<Loan, String> loanDate = new TableColumn<>("Loan Date");
+        TableColumn<Loan, String> returnDate = new TableColumn<>("Return Date");
+        TableColumn<Loan, Integer> returned = new TableColumn<>("Returned");
+        TableColumn<Loan, String> customerName = new TableColumn<>("Customer Name");
+        TableColumn<Loan, String> customerPhone = new TableColumn<>("Customer Phone Number");
+        TableColumn<Loan, Integer> productID = new TableColumn<>("Product ID");
+        TableColumn<Loan, String> productType = new TableColumn<>("Product Type");
+
+        tableView.getColumns()
+                .addAll(Arrays.asList(loanDate, returnDate, returned, customerName, customerPhone, productID,
+                        productType));
+
+        loanDate.setCellValueFactory(new PropertyValueFactory<Loan, String>("loanDate"));
+        returnDate.setCellValueFactory(new PropertyValueFactory<Loan, String>("returnDate"));
+        returned.setCellValueFactory(new PropertyValueFactory<Loan, Integer>("returned"));
+        customerName.setCellValueFactory(new PropertyValueFactory<Loan, String>("customerName"));
+        customerPhone.setCellValueFactory(new PropertyValueFactory<Loan, String>("customerPhone"));
+        productID.setCellValueFactory(new PropertyValueFactory<Loan, Integer>("productID"));
+        productType.setCellValueFactory(new PropertyValueFactory<Loan, String>("productType"));
+
+        ArrayList<Loan> loanList = Loan.all();
+        for (Loan loan : loanList) {
+            tableView.getItems().add(loan);
+        }
+
+        Label searchLabel = new Label("Search:");
+        TextField searchField = new TextField();
+        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+            tableView.getItems().clear();
+            for (Loan loan : loanList) {
+                String[] properties = loan.allProperties();
+                for (String property : properties) {
+                    if (property.toLowerCase().contains(newValue.toLowerCase())) {
+                        tableView.getItems().add(loan);
+                        break;
+                    }
+                }
+            }
+        });
+
+        GridPane grid = new GridPane();
+        grid.setPadding(new Insets(4, 4, 4, 4));
+        grid.setVgap(5);
+        grid.setHgap(5);
+
+        GridPane.setConstraints(searchLabel, 0, 0);
+        GridPane.setConstraints(searchField, 1, 0);
+        GridPane.setConstraints(tableView, 0, 1);
+        GridPane.setColumnSpan(tableView, 2);
+
+        tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
+        grid.getChildren().addAll(searchLabel, searchField, tableView);
+        loansTab.getChildren().add(grid);
+        return loansTab;
     }
 
     public void start(Stage primaryStage) {
@@ -161,6 +225,9 @@ public class UI extends Application {
 
         Tab dvdsTab = new Tab("DVDs", createDVDsTab());
         tabPane.getTabs().add(dvdsTab);
+
+        Tab loansTab = new Tab("Loans", createLoansTab());
+        tabPane.getTabs().add(loansTab);
 
         VBox vBox = new VBox(tabPane);
         Scene scene = new Scene(vBox);

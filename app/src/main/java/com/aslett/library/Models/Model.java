@@ -36,6 +36,9 @@ public abstract class Model implements Cloneable {
                         case "int":
                             value = rs.getInt(field.field);
                             break;
+                        case "date":
+                            value = rs.getDate(field.field);
+                            break;
                         case "text":
                         case "longtext":
                             value = rs.getString(field.field);
@@ -83,7 +86,7 @@ public abstract class Model implements Cloneable {
         return product;
     }
 
-    public static ArrayList<Model> all(Model instance) {
+    protected static ArrayList<Model> all(Model instance) {
         ArrayList<Model> products = new ArrayList<Model>();
         Class<?> c = null;
 
@@ -108,6 +111,9 @@ public abstract class Model implements Cloneable {
                     switch (type) {
                         case "int":
                             value = rs.getInt(field.field);
+                            break;
+                        case "date":
+                            value = rs.getDate(field.field);
                             break;
                         case "text":
                         case "longtext":
@@ -291,7 +297,7 @@ public abstract class Model implements Cloneable {
         for (int i = 0; i < fields.size(); i++) {
             DBField field = fields.get(i);
             Field f = null;
-            
+
             c = this.getClass();
             while (f == null) {
                 try {
