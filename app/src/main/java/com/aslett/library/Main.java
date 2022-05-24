@@ -11,7 +11,7 @@ public class Main {
         db.initDB();
 
         // User user = new User("kieran", "test");
-        User user = User.find(2);
+        User user = User.findByField("username", "kieran");
         System.out.println(user.username);
         try {
             if (HashingController.validatePassword("test1", user.password)) {
