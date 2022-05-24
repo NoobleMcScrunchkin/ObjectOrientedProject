@@ -47,15 +47,20 @@ public class Loan extends Model {
     }
 
     public static Loan find(int ID) {
-        Loan book = (Loan) Model.find(new Loan(), ID);
-        return book;
+        Loan loan = (Loan) Model.find(new Loan(), ID);
+        return loan;
+    }
+    
+    public static Loan findByField(String field, String username) {
+        Loan loan = (Loan) Model.findByField(new Loan(), field, username);
+        return loan;
     }
 
     public static ArrayList<Loan> all() {
-        ArrayList<Model> products = (ArrayList<Model>) Model.all(new Loan());
+        ArrayList<Model> loanModels = (ArrayList<Model>) Model.all(new Loan());
         ArrayList<Loan> loans = new ArrayList<Loan>();
-        for (Model product : products) {
-            loans.add((Loan) product);
+        for (Model loan : loanModels) {
+            loans.add((Loan) loan);
         }
         return loans;
     }

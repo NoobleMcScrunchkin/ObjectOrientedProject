@@ -47,6 +47,11 @@ public class DVD extends Product {
         return dvd;
     }
 
+    public static DVD findByField(String field, String username) {
+        DVD dvd = (DVD) Model.findByField(new DVD(), field, username);
+        return dvd;
+    }
+
     public static ArrayList<DVD> all() {
         ArrayList<Model> products = (ArrayList<Model>) Model.all(new DVD());
         ArrayList<DVD> dvds = new ArrayList<DVD>();

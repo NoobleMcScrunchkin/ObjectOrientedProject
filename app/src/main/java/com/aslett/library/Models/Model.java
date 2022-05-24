@@ -8,21 +8,21 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public abstract class Model implements Cloneable {
-    public String table = "";
+    protected String table = "";
 
-    public ArrayList<DBField> fields = new ArrayList<DBField>();
+    protected ArrayList<DBField> fields = new ArrayList<DBField>();
 
-    public int ID = 0;
+    protected int ID = 0;
 
     public Model() {
         fields.add(new DBField("ID", "int"));
     }
 
-    protected static Object find(Model instance, int ID) {
+    protected static Object findByField(Model instance, String dbfield, String dbvalue) {
         Model product = instance;
         Class<?> c = null;
 
-        ResultSet rs = Main.db.query(String.format("SELECT * FROM %s WHERE ID = %d", product.table, ID));
+        ResultSet rs = Main.db.query(String.format("SELECT * FROM %s WHERE %s = '%s'", product.table, dbfield, dbvalue));
 
         try {
             while (rs.next()) {
@@ -84,6 +84,10 @@ public abstract class Model implements Cloneable {
             }
         }
         return product;
+    }
+
+    protected static Object find(Model instance, int ID) {
+        return findByField(instance, "ID", Integer.toString(ID));
     }
 
     protected static ArrayList<Model> all(Model instance) {

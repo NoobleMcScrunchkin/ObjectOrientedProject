@@ -2,7 +2,7 @@ package com.aslett.library.Utils;
 
 import java.sql.*;
 
-import com.aslett.library.Models.Loan;
+import com.aslett.library.Models.*;
 import com.aslett.library.Models.Products.*;
 
 import io.github.cdimascio.dotenv.*;
@@ -33,6 +33,8 @@ public class DB {
         dvd.createTable();
         Loan loan = new Loan();
         loan.createTable();
+        User user = new User();
+        user.createTable();
     }
 
     public ResultSet query(String query) {

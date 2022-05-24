@@ -47,6 +47,11 @@ public class Book extends Product {
         return book;
     }
 
+    public static Book findByField(String field, String username) {
+        Book book = (Book) Model.findByField(new Book(), field, username);
+        return book;
+    }
+
     public static ArrayList<Book> all() {
         ArrayList<Model> products = (ArrayList<Model>) Model.all(new Book());
         ArrayList<Book> books = new ArrayList<Book>();
