@@ -3,12 +3,14 @@ package com.aslett.library.Models.Products;
 import com.aslett.library.Models.Model;
 import com.aslett.library.Utils.DBField;
 
+// Class representing a product in the library
 public abstract class Product extends Model {
     public String name = "";
     public String description = "";
     public String image = "";
     public int quantity = 0;
 
+    // Base product class
     public Product(String name, String description, String image, int quantity) {
         super();
         this.name = name;
@@ -21,6 +23,7 @@ public abstract class Product extends Model {
         fields.add(new DBField("quantity", "int"));
     }
 
+    // Getters
     public String getName() {
         return name;
     }

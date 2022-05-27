@@ -3,10 +3,10 @@
     "configurations": [
         {
             "type": "java",
-            "name": "Launch Main",
+            "name": "Launch",
             "request": "launch",
             "mainClass": "com.aslett.library.Main",
-            "projectName": "app"
+            "jrePath": "${env:JAVA_HOME}/jre/bin/java"
         },
         {
             "type": "java",

@@ -4,6 +4,7 @@ import com.aslett.library.Models.Model;
 import com.aslett.library.Utils.DBField;
 import java.util.ArrayList;
 
+// DVD Product
 public class DVD extends Product {
     public String director;
     public String genre;
@@ -12,6 +13,7 @@ public class DVD extends Product {
     public String company;
     public Integer runtime;
 
+    // Create a new DVD
     public DVD(String name, String description, String image, String director, String genre, int year,
             String certificate, String company, int runtime, int quantity) {
         super(name, description, image, quantity);
@@ -27,11 +29,13 @@ public class DVD extends Product {
         this.dbInsert();
     }
 
+    //Template DVD
     public DVD() {
         super("", "", "", 0);
         addFields();
     }
 
+    // Set DB Column info
     public void addFields() {
         this.table = "dvds";
         fields.add(new DBField("director", "text"));
@@ -42,16 +46,23 @@ public class DVD extends Product {
         fields.add(new DBField("runtime", "int"));
     }
 
+    // Get by ID
     public static DVD find(int ID) {
         DVD dvd = (DVD) Model.find(new DVD(), ID);
         return dvd;
     }
 
-    public static DVD findByField(String field, String username) {
-        DVD dvd = (DVD) Model.findByField(new DVD(), field, username);
-        return dvd;
+    // Get by field
+    public static ArrayList<DVD> findByField(String field, String value) {
+        ArrayList<Model> products = (ArrayList<Model>) Model.findByField(new DVD(), field, value);
+        ArrayList<DVD> dvds = new ArrayList<DVD>();
+        for (Model product : products) {
+            dvds.add((DVD) product);
+        }
+        return dvds;
     }
 
+    // Get all dvds
     public static ArrayList<DVD> all() {
         ArrayList<Model> products = (ArrayList<Model>) Model.all(new DVD());
         ArrayList<DVD> dvds = new ArrayList<DVD>();
@@ -61,6 +72,7 @@ public class DVD extends Product {
         return dvds;
     }
 
+    // Getters
     public String getDirector() {
         return director;
     }

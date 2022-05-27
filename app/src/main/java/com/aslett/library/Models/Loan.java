@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import com.aslett.library.Utils.DBField;
 
+// Loans
 public class Loan extends Model {
     public Date loanDate;
     public Date returnDate;
@@ -14,6 +15,7 @@ public class Loan extends Model {
     public int productID;
     public String productType;
 
+    // Create a new Loan
     public Loan(Date loanDate, Date returnDate, int returned, String customerName, String customerPhone, int productID,
             String productType) {
         super();
@@ -30,11 +32,13 @@ public class Loan extends Model {
         this.dbInsert();
     }
 
+    // Template Loan
     public Loan() {
         super();
         addFields();
     }
 
+    // Set DB Column info
     public void addFields() {
         this.table = "loans";
         fields.add(new DBField("loanDate", "date"));
@@ -46,16 +50,23 @@ public class Loan extends Model {
         fields.add(new DBField("productType", "text"));
     }
 
+    // Get by ID
     public static Loan find(int ID) {
         Loan loan = (Loan) Model.find(new Loan(), ID);
         return loan;
     }
     
-    public static Loan findByField(String field, String username) {
-        Loan loan = (Loan) Model.findByField(new Loan(), field, username);
-        return loan;
+    // Get by field
+    public static ArrayList<Loan> findByField(String field, String value) {
+        ArrayList<Model> loanModels = (ArrayList<Model>) Model.findByField(new Loan(), field, value);
+        ArrayList<Loan> loans = new ArrayList<Loan>();
+        for (Model loan : loanModels) {
+            loans.add((Loan) loan);
+        }
+        return loans;
     }
 
+    // Get all loans
     public static ArrayList<Loan> all() {
         ArrayList<Model> loanModels = (ArrayList<Model>) Model.all(new Loan());
         ArrayList<Loan> loans = new ArrayList<Loan>();
@@ -65,6 +76,7 @@ public class Loan extends Model {
         return loans;
     }
 
+    // Getters
     public Date getLoanDate() {
         return loanDate;
     }

@@ -4,6 +4,7 @@ import com.aslett.library.Models.Model;
 import com.aslett.library.Utils.DBField;
 import java.util.ArrayList;
 
+// Book Product
 public class Book extends Product {
     public String author;
     public String publisher;
@@ -12,6 +13,7 @@ public class Book extends Product {
     public String language;
     public Integer year;
 
+    // Create a new book
     public Book(String name, String description, String image, String author, String publisher, String isbn,
             String genre, String language, Integer year, Integer quantity) {
         super(name, description, image, quantity);
@@ -27,11 +29,14 @@ public class Book extends Product {
         this.dbInsert();
     }
 
+
+    // Template Book
     public Book() {
         super("", "", "", 0);
         addFields();
     }
 
+    // Set DB Column info
     public void addFields() {
         this.table = "books";
         fields.add(new DBField("author", "text"));
@@ -42,16 +47,23 @@ public class Book extends Product {
         fields.add(new DBField("year", "int"));
     }
 
+    // Get by ID
     public static Book find(int ID) {
         Book book = (Book) Model.find(new Book(), ID);
         return book;
     }
 
-    public static Book findByField(String field, String username) {
-        Book book = (Book) Model.findByField(new Book(), field, username);
-        return book;
+    // Get by field
+    public static ArrayList<Book> findByField(String field, String value) {
+        ArrayList<Model> products = (ArrayList<Model>) Model.findByField(new Book(), field, value);
+        ArrayList<Book> books = new ArrayList<Book>();
+        for (Model product : products) {
+            books.add((Book) product);
+        }
+        return books;
     }
 
+    // Get all books
     public static ArrayList<Book> all() {
         ArrayList<Model> products = (ArrayList<Model>) Model.all(new Book());
         ArrayList<Book> books = new ArrayList<Book>();
@@ -61,6 +73,7 @@ public class Book extends Product {
         return books;
     }
 
+    // Getters
     public String getAuthor() {
         return author;
     }

@@ -4,32 +4,34 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import com.aslett.library.Models.Loan;
 import com.aslett.library.Models.Products.*;
+import com.aslett.library.Utils.AuthController;
 import javafx.application.Application;
-import javafx.geometry.Insets;
-import javafx.scene.Group;
-import javafx.scene.Scene;
-import javafx.scene.control.TabPane;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.event.*;
+import javafx.geometry.*;
+import javafx.scene.*;
+import javafx.scene.control.*;
 import javafx.scene.control.TabPane.TabClosingPolicy;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.control.Label;
-import javafx.scene.control.Tab;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
+// JavaFX UI Class
 public class UI extends Application {
+    private Stage stage;
+
+    // Entrypoint
     public static void begin() {
         launch();
     }
 
     public Group createBooksTab() {
+        // Create Group to be returned
         Group booksTab = new Group();
 
+        // Create TableView
         TableView<Book> tableView = new TableView<>();
 
+        // Create Table Columns
         TableColumn<Book, String> name = new TableColumn<>("Name");
         TableColumn<Book, String> desc = new TableColumn<>("Description");
         TableColumn<Book, String> author = new TableColumn<>("Author");
@@ -40,9 +42,11 @@ public class UI extends Application {
         TableColumn<Book, Integer> year = new TableColumn<>("Year");
         TableColumn<Book, Integer> quantity = new TableColumn<>("Quantity");
 
+        // Add Columns to table
         tableView.getColumns()
                 .addAll(Arrays.asList(name, desc, author, publisher, isbn, genre, language, year, quantity));
 
+        // Set property on object to be used by table column
         name.setCellValueFactory(new PropertyValueFactory<Book, String>("name"));
         desc.setCellValueFactory(new PropertyValueFactory<Book, String>("description"));
         author.setCellValueFactory(new PropertyValueFactory<Book, String>("author"));
@@ -53,14 +57,19 @@ public class UI extends Application {
         year.setCellValueFactory(new PropertyValueFactory<Book, Integer>("year"));
         quantity.setCellValueFactory(new PropertyValueFactory<Book, Integer>("quantity"));
 
+        // Add books to the table
         ArrayList<Book> bookList = Book.all();
         for (Book book : bookList) {
             tableView.getItems().add(book);
         }
 
+        // Search Box
         Label searchLabel = new Label("Search:");
         TextField searchField = new TextField();
+
+        // Handle text change event
         searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+            // Find books where one of the properties match the search value
             tableView.getItems().clear();
             for (Book book : bookList) {
                 String[] properties = book.allProperties();
@@ -73,11 +82,13 @@ public class UI extends Application {
             }
         });
 
+        // Set grid options
         GridPane grid = new GridPane();
         grid.setPadding(new Insets(4, 4, 4, 4));
         grid.setVgap(5);
         grid.setHgap(5);
 
+        // Set node locations
         GridPane.setConstraints(searchLabel, 0, 0);
         GridPane.setConstraints(searchField, 1, 0);
         GridPane.setConstraints(tableView, 0, 1);
@@ -85,6 +96,7 @@ public class UI extends Application {
 
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
+        // Add nodes to grid and add grid to group
         grid.getChildren().addAll(searchLabel, searchField, tableView);
         booksTab.getChildren().add(grid);
         return booksTab;
@@ -215,11 +227,13 @@ public class UI extends Application {
         return loansTab;
     }
 
-    public void start(Stage primaryStage) {
-
+    // Main Content Scene
+    public Scene createMainScene() {
+        // Create Tab based navigation pane
         TabPane tabPane = new TabPane();
         tabPane.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
 
+        // Add tabs to navigation pane
         Tab booksTab = new Tab("Books", createBooksTab());
         tabPane.getTabs().add(booksTab);
 
@@ -229,12 +243,74 @@ public class UI extends Application {
         Tab loansTab = new Tab("Loans", createLoansTab());
         tabPane.getTabs().add(loansTab);
 
+        // Create main scene
         VBox vBox = new VBox(tabPane);
         Scene scene = new Scene(vBox);
 
-        primaryStage.setScene(scene);
-        primaryStage.setTitle("Library System");
+        return scene;
+    }
 
-        primaryStage.show();
+    // Login Scene
+    public Scene createLoginScene() {
+        // Create grid to place content
+        GridPane grid = new GridPane();
+        grid.setAlignment(Pos.CENTER);
+        grid.setHgap(5);
+        grid.setVgap(5);
+        grid.setPadding(new Insets(25, 25, 25, 25));
+
+        // Username input
+        Label usernameLabel = new Label("User Name:");
+        grid.add(usernameLabel, 0, 0);
+
+        TextField usernameField = new TextField();
+        grid.add(usernameField, 1, 0);
+
+        // Password Input
+        Label passwordLabel = new Label("Password:");
+        grid.add(passwordLabel, 0, 1);
+
+        PasswordField passwordField = new PasswordField();
+        grid.add(passwordField, 1, 1);
+
+        // Sign in Button
+        Button signInBtn = new Button("Sign in");
+        HBox hbBtn = new HBox(10);
+        hbBtn.setAlignment(Pos.BOTTOM_RIGHT);
+        hbBtn.getChildren().add(signInBtn);
+        grid.add(hbBtn, 1, 3);
+
+        // Handle Button Press
+        signInBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                // Attempt Login
+                if (AuthController.attemptLogin(usernameField.getText(), passwordField.getText())) {
+                    // Move to main scene
+                    stage.setScene(createMainScene());
+                } else {
+                    // Display error if invalid credentials
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Error");
+                    alert.setHeaderText("Login Failed");
+                    alert.setContentText("Invalid username or password");
+                    alert.showAndWait();
+                }
+            }
+        });
+
+        // return the scene
+        Scene scene = new Scene(grid, 300, 275);
+        return scene;
+    }
+
+    // Create Stage
+    public void start(Stage primaryStage) {
+        stage = primaryStage;
+        stage.setTitle("Library System");
+
+        stage.setScene(createLoginScene());
+
+        stage.show();
     }
 }
