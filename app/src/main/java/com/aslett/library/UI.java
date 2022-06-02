@@ -573,7 +573,8 @@ public class UI extends Application {
                     byte[] imageBytes = Base64.getDecoder().decode(product.image);
                     ByteArrayInputStream is = new ByteArrayInputStream(imageBytes);
                     imageView.setImage(new Image(is));
-                } catch(Exception f) {}
+                } catch (Exception f) {
+                }
                 imageView.setPreserveRatio(true);
                 imageView.fitHeightProperty().set(400);
                 grid.add(imageView, 0, 0);
@@ -647,7 +648,14 @@ public class UI extends Application {
     public Group addLoansSidebar(TableView<Loan> table) {
         Group sideBarGroup = new Group();
 
+        GridPane grid = new GridPane();
+        grid.setAlignment(Pos.CENTER);
+        grid.setHgap(5);
+        grid.setVgap(5);
+        grid.setPadding(new Insets(25, 25, 25, 25));
+
         Button returnBtn = new Button("Mark as returned");
+        grid.add(returnBtn, 0, 0);
 
         returnBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -662,7 +670,7 @@ public class UI extends Application {
             }
         });
 
-        sideBarGroup.getChildren().add(returnBtn);
+        sideBarGroup.getChildren().add(grid);
         return sideBarGroup;
     }
 
