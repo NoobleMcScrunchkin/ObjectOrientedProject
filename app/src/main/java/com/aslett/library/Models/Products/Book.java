@@ -3,8 +3,6 @@ package com.aslett.library.Models.Products;
 import com.aslett.library.Models.Loan;
 import com.aslett.library.Models.Model;
 import com.aslett.library.Utils.DBField;
-
-import java.sql.Date;
 import java.util.ArrayList;
 
 // Book Product

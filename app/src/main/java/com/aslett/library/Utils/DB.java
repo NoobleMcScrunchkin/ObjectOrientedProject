@@ -50,7 +50,7 @@ public class DB {
         User user = new User();
         user.createTable();
         if (User.findByField("username", "Admin").size() == 0) {
-            User admin = new User("Admin", "Password01", true, true);
+            new User("Admin", "Password01", true, true);
         }
     }
 
