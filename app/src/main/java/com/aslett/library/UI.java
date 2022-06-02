@@ -10,11 +10,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Calendar;
+import java.util.HashMap;
 
 import com.aslett.library.Models.Loan;
 import com.aslett.library.Models.User;
 import com.aslett.library.Models.Products.*;
 import com.aslett.library.Utils.AuthController;
+import com.aslett.library.Utils.DBField;
+
 import javafx.application.Application;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -151,7 +154,7 @@ public class UI extends Application {
         grid.setVgap(5);
         grid.setHgap(5);
 
-        Group sidebar = addProductSidebar(bookTable);
+        Group sidebar = addBookSidebar(bookTable);
 
         // Set node locations
         GridPane.setConstraints(searchLabel, 0, 0);
@@ -224,7 +227,7 @@ public class UI extends Application {
         grid.setVgap(5);
         grid.setHgap(5);
 
-        Group sidebar = addProductSidebar(dvdTable);
+        Group sidebar = addDVDSidebar(dvdTable);
 
         GridPane.setConstraints(searchLabel, 0, 0);
         GridPane.setConstraints(searchField, 1, 0);
@@ -359,9 +362,145 @@ public class UI extends Application {
         return loansTab;
     }
 
-    public Group addProductSidebar(TableView<?> table) {
-        Group sideBarGroup = new Group();
+    public Group addDVDSidebar(TableView<?> table) {
+        Group sidebarGroup = new Group();
 
+        GridPane grid = addProductSidebar(table);
+
+        Integer row = 4;
+
+        HashMap<String, Label> labels = new HashMap<String, Label>();
+        HashMap<String, TextField> inputfields = new HashMap<String, TextField>();
+
+        DVD dvd = new DVD();
+        for (DBField field : dvd.fields) {
+            if (field.field == "ID") {
+                continue;
+            }
+            if (field.field == "image") {
+                labels.put(field.field, new Label("Image (Base64 Encoded)"));
+            } else {
+                labels.put(field.field, new Label(toTitleCase(field.field)));
+            }
+            grid.add(labels.get(field.field), 0, row);
+
+            inputfields.put(field.field, new TextField());
+            grid.add(inputfields.get(field.field), 1, row);
+            row++;
+        }
+
+        Button addBookBtn = new Button("Add Book");
+        grid.add(addBookBtn, 0, row);
+
+        addBookBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                for (DBField field : dvd.fields) {
+                    if (field.field == "ID") {
+                        continue;
+                    }
+                    if (inputfields.get(field.field).getText() == "") {
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("Error");
+                        alert.setHeaderText("Error");
+                        alert.setContentText("Please fill in all fields");
+                        alert.showAndWait();
+                        return;
+                    }
+                }
+                try {
+                    new DVD(inputfields.get("name").getText(), inputfields.get("description").getText(),
+                            inputfields.get("image").getText(), inputfields.get("director").getText(),
+                            inputfields.get("genre").getText(), Integer.parseInt(inputfields.get("year").getText()),
+                            inputfields.get("certificate").getText(), inputfields.get("company").getText(),
+                            Integer.parseInt(inputfields.get("runtime").getText()),
+                            Integer.parseInt(inputfields.get("quantity").getText()));
+                } catch (Exception f) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Error");
+                    alert.setHeaderText("Error");
+                    alert.setContentText("Invalid input");
+                    alert.showAndWait();
+                }
+                updateContent();
+            }
+        });
+
+        sidebarGroup.getChildren().add(grid);
+
+        return sidebarGroup;
+    }
+
+    public Group addBookSidebar(TableView<?> table) {
+        Group sidebarGroup = new Group();
+
+        GridPane grid = addProductSidebar(table);
+
+        Integer row = 4;
+
+        HashMap<String, Label> labels = new HashMap<String, Label>();
+        HashMap<String, TextField> inputfields = new HashMap<String, TextField>();
+
+        Book book = new Book();
+        for (DBField field : book.fields) {
+            if (field.field == "ID") {
+                continue;
+            }
+            if (field.field == "image") {
+                labels.put(field.field, new Label("Image (Base64 Encoded)"));
+            } else {
+                labels.put(field.field, new Label(toTitleCase(field.field)));
+            }
+            grid.add(labels.get(field.field), 0, row);
+
+            inputfields.put(field.field, new TextField());
+            grid.add(inputfields.get(field.field), 1, row);
+            row++;
+        }
+
+        Button addBookBtn = new Button("Add Book");
+        grid.add(addBookBtn, 0, row);
+
+        addBookBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                for (DBField field : book.fields) {
+                    if (field.field == "ID") {
+                        continue;
+                    }
+                    if (inputfields.get(field.field).getText() == "") {
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("Error");
+                        alert.setHeaderText("Error");
+                        alert.setContentText("Please fill in all fields");
+                        alert.showAndWait();
+                        return;
+                    }
+                }
+                try {
+                    new Book(inputfields.get("name").getText(), inputfields.get("description").getText(),
+                            inputfields.get("image").getText(), inputfields.get("author").getText(),
+                            inputfields.get("publisher").getText(), inputfields.get("isbn").getText(),
+                            inputfields.get("genre").getText(), inputfields.get("language").getText(),
+                            Integer.parseInt(inputfields.get("year").getText()),
+                            Integer.parseInt(inputfields.get("quantity").getText()));
+                } catch (Exception f) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Error");
+                    alert.setHeaderText("Error");
+                    alert.setContentText("Invalid input");
+                    alert.showAndWait();
+                }
+                updateContent();
+            }
+        });
+
+        sidebarGroup.getChildren().add(grid);
+
+        return sidebarGroup;
+    }
+
+    public GridPane addProductSidebar(TableView<?> table) {
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
         grid.setHgap(5);
@@ -430,9 +569,11 @@ public class UI extends Application {
                 grid.setPadding(new Insets(25, 25, 25, 25));
 
                 ImageView imageView = new ImageView();
-                byte[] imageBytes = Base64.getDecoder().decode(product.image);
-                ByteArrayInputStream is = new ByteArrayInputStream(imageBytes);
-                imageView.setImage(new Image(is));
+                try {
+                    byte[] imageBytes = Base64.getDecoder().decode(product.image);
+                    ByteArrayInputStream is = new ByteArrayInputStream(imageBytes);
+                    imageView.setImage(new Image(is));
+                } catch(Exception f) {}
                 imageView.setPreserveRatio(true);
                 imageView.fitHeightProperty().set(400);
                 grid.add(imageView, 0, 0);
@@ -500,8 +641,7 @@ public class UI extends Application {
             }
         });
 
-        sideBarGroup.getChildren().add(grid);
-        return sideBarGroup;
+        return grid;
     }
 
     public Group addLoansSidebar(TableView<Loan> table) {
