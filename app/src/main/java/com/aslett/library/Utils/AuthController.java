@@ -83,7 +83,7 @@ public class AuthController {
     // Attempt to sign the user in, given a username and password
     public static boolean attemptLogin(String username, String password) {
         User user = User.findByField("username", username).get(0);
-        if (user == null || user.getID() == 0) {
+        if (user == null || user.getID() == 0 || user.approved == 0) {
             return false;
         }
         try {

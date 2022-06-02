@@ -39,4 +39,12 @@ public abstract class Product extends Model {
     public Integer getQuantity() {
         return quantity;
     }
+
+    public Integer getAvailable() {
+        return quantity;
+    }
+
+    public String getEarliestReturn() {
+        return "";
+    }
 }

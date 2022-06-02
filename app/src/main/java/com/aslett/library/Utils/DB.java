@@ -1,6 +1,9 @@
 package com.aslett.library.Utils;
 
 import java.sql.*;
+import java.util.HashMap;
+import java.util.Map;
+
 import com.aslett.library.Models.*;
 import com.aslett.library.Models.Products.*;
 import io.github.cdimascio.dotenv.*;
@@ -46,10 +49,13 @@ public class DB {
         loan.createTable();
         User user = new User();
         user.createTable();
+        if (User.findByField("username", "Admin").size() == 0) {
+            User admin = new User("Admin", "Password01", true, true);
+        }
     }
 
     // Execute Query with results on DB
-    public ResultSet query(String query) {
+    public Map<String, Object> query(String query) {
         Connection conn = null;
         Statement stmt = null;
         ResultSet rs = null;
@@ -60,7 +66,12 @@ public class DB {
             stmt = conn.createStatement();
             rs = stmt.executeQuery(query);
 
-            return rs;
+            Map<String, Object> results = new HashMap<>();
+            results.put("resultset", rs);
+            results.put("statement", stmt);
+            results.put("connection", conn);
+
+            return results;
         } catch (SQLException ex) {
             System.out.println("SQLException: " + ex.getMessage());
             System.out.println("SQLState: " + ex.getSQLState());
@@ -80,6 +91,9 @@ public class DB {
 
             stmt = conn.createStatement();
             stmt.executeUpdate(query);
+
+            stmt.close();
+            conn.close();
         } catch (SQLException ex) {
             System.out.println("SQLException: " + ex.getMessage());
             System.out.println("SQLState: " + ex.getSQLState());

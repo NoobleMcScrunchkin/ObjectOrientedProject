@@ -1,5 +1,6 @@
 package com.aslett.library.Models.Products;
 
+import com.aslett.library.Models.Loan;
 import com.aslett.library.Models.Model;
 import com.aslett.library.Utils.DBField;
 import java.util.ArrayList;
@@ -29,7 +30,7 @@ public class DVD extends Product {
         this.dbInsert();
     }
 
-    //Template DVD
+    // Template DVD
     public DVD() {
         super("", "", "", 0);
         addFields();
@@ -95,5 +96,40 @@ public class DVD extends Product {
 
     public Integer getRuntime() {
         return runtime;
+    }
+
+    public Integer getAvailable() {
+        ArrayList<Loan> loans = Loan.findByField("productType", "dvds");
+        int loanCount = 0;
+        for (Loan loan : loans) {
+            if (loan.productID == this.ID && loan.returned == 0) {
+                loanCount++;
+            }
+        }
+        return quantity - loanCount;
+    }
+
+    public String getEarliestReturn() {
+        ArrayList<Loan> loans = Loan.findByField("productType", "dvds");
+        java.util.Date earliestReturn = null;
+        for (Loan loan : loans) {
+            if (loan.productID != this.ID || loan.returned == 1) {
+                continue;
+            }
+            java.util.Date sqlDate = loan.getReturnDate();
+            if (earliestReturn == null) {
+                earliestReturn = sqlDate;
+                continue;
+            }
+
+            if (sqlDate != null && sqlDate.compareTo(earliestReturn) < 0) {
+                earliestReturn = sqlDate;
+            }
+        }
+        if (earliestReturn != null) {
+            return earliestReturn.toString();
+        } else {
+            return "No next return date";
+        }
     }
 }

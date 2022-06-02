@@ -9,9 +9,19 @@ public class User extends Model {
     public String username;
     public String password;
     public int isAdmin;
+    public int approved;
 
     // Create a new User
     public User(String username, String password, boolean isAdmin) {
+        this(username, password, isAdmin, false);
+    }
+
+    // Create a new User, defaulting to not an admin
+    public User(String username, String password) {
+        this(username, password, false);
+    }
+
+    public User(String username, String password, boolean isAdmin, boolean isApproved) {
         super();
         addFields();
 
@@ -24,13 +34,9 @@ public class User extends Model {
 
         this.username = username;
         this.isAdmin = isAdmin ? 1 : 0;
+        this.approved = isApproved ? 1: 0;
 
         this.dbInsert();
-    }
-
-    // Create a new User, defaulting to not an admin
-    public User(String username, String password) {
-        this(username, password, false);
     }
 
     // Template User
@@ -45,6 +51,7 @@ public class User extends Model {
         fields.add(new DBField("username", "text"));
         fields.add(new DBField("password", "text"));
         fields.add(new DBField("isAdmin", "int"));
+        fields.add(new DBField("approved", "int"));
     }
 
     // Get by ID
@@ -80,5 +87,17 @@ public class User extends Model {
 
     public boolean isAdmin() {
         return isAdmin == 1;
+    }
+
+    public boolean isApproved() {
+        return approved == 1;
+    }
+
+    public String getAdminStr() {
+        return isAdmin() ? "Yes" : "No";
+    }
+
+    public String getApprovedStr() {
+        return isApproved() ? "Yes" : "No";
     }
 }

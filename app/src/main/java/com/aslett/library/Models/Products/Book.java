@@ -1,7 +1,10 @@
 package com.aslett.library.Models.Products;
 
+import com.aslett.library.Models.Loan;
 import com.aslett.library.Models.Model;
 import com.aslett.library.Utils.DBField;
+
+import java.sql.Date;
 import java.util.ArrayList;
 
 // Book Product
@@ -28,7 +31,6 @@ public class Book extends Product {
 
         this.dbInsert();
     }
-
 
     // Template Book
     public Book() {
@@ -96,5 +98,40 @@ public class Book extends Product {
 
     public Integer getYear() {
         return year;
+    }
+
+    public Integer getAvailable() {
+        ArrayList<Loan> loans = Loan.findByField("productType", "books");
+        int loanCount = 0;
+        for (Loan loan : loans) {
+            if (loan.productID == this.ID && loan.returned == 0) {
+                loanCount++;
+            }
+        }
+        return quantity - loanCount;
+    }
+
+    public String getEarliestReturn() {
+        ArrayList<Loan> loans = Loan.findByField("productType", "books");
+        java.util.Date earliestReturn = null;
+        for (Loan loan : loans) {
+            if (loan.productID != this.ID || loan.returned == 1) {
+                continue;
+            }
+            java.util.Date sqlDate = loan.getReturnDate();
+            if (earliestReturn == null) {
+                earliestReturn = sqlDate;
+                continue;
+            }
+
+            if (sqlDate != null && sqlDate.compareTo(earliestReturn) < 0) {
+                earliestReturn = sqlDate;
+            }
+        }
+        if (earliestReturn != null) {
+            return earliestReturn.toString();
+        } else {
+            return "No next return date";
+        }
     }
 }

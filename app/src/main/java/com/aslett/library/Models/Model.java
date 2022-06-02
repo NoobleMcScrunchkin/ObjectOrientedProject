@@ -3,9 +3,9 @@ package com.aslett.library.Models;
 import com.aslett.library.Main;
 import com.aslett.library.Utils.DBField;
 import java.lang.reflect.Field;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * Class to connect an object to a database.
@@ -16,8 +16,8 @@ import java.util.ArrayList;
  */
 public abstract class Model implements Cloneable {
     // Init Variables
-    protected String table = "";
-    protected ArrayList<DBField> fields = new ArrayList<DBField>();
+    public String table = "";
+    public ArrayList<DBField> fields = new ArrayList<DBField>();
     protected int ID = 0;
 
     /**
@@ -36,8 +36,12 @@ public abstract class Model implements Cloneable {
         Model model = null;
 
         // Get Results from DB
-        ResultSet rs = Main.db
+        Map<String, Object> results = Main.db
                 .query(String.format("SELECT * FROM %s WHERE %s = '%s'", instance.table, dbfield, dbvalue));
+
+        ResultSet rs = (ResultSet) results.get("resultset");
+        Statement stmt = (Statement) results.get("statement");
+        Connection conn = (Connection) results.get("connection");
 
         try {
             // Iterate over each row and each property in the result set
@@ -111,6 +115,22 @@ public abstract class Model implements Cloneable {
 
                 rs = null;
             }
+            if (stmt != null) {
+                try {
+                    stmt.close();
+                } catch (SQLException sqlEx) {
+                }
+
+                stmt = null;
+            }
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException sqlEx) {
+                }
+
+                conn = null;
+            }
         }
 
         // Return the results
@@ -129,7 +149,11 @@ public abstract class Model implements Cloneable {
         Class<?> c = null;
 
         // Get Results from DB
-        ResultSet rs = Main.db.query(String.format("SELECT * FROM %s ", instance.table));
+        Map<String, Object> results = Main.db.query(String.format("SELECT * FROM %s ", instance.table));
+
+        ResultSet rs = (ResultSet) results.get("resultset");
+        Statement stmt = (Statement) results.get("statement");
+        Connection conn = (Connection) results.get("connection");
 
         try {
             // Iterate over each row and each property in the result set
@@ -203,6 +227,22 @@ public abstract class Model implements Cloneable {
                 }
 
                 rs = null;
+            }
+            if (stmt != null) {
+                try {
+                    stmt.close();
+                } catch (SQLException sqlEx) {
+                }
+
+                stmt = null;
+            }
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException sqlEx) {
+                }
+
+                conn = null;
             }
         }
 
@@ -284,7 +324,12 @@ public abstract class Model implements Cloneable {
                 // If the appropriate class is found, add the value to the query
                 if (f != null) {
                     try {
-                        query += String.format("'%s'", f.get(this).toString());
+                        Object value = f.get(this);
+                        if (value != null) {
+                            query += String.format("'%s'", value.toString());
+                        } else {
+                            query += "NULL";
+                        }
                     } catch (Exception e) {
                     }
                 }
@@ -336,7 +381,12 @@ public abstract class Model implements Cloneable {
                 // If the appropriate class is found, add the field and value to the query
                 if (f != null) {
                     try {
-                        query += String.format("%s = '%s'", field.field, f.get(this).toString());
+                        Object value = f.get(this);
+                        if (value != null) {
+                            query += String.format("%s = '%s'", field.field, value.toString());
+                        } else {
+                            query += String.format("%s = NULL", field.field);
+                        }
                     } catch (Exception e) {
                     }
                 }
